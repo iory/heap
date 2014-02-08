@@ -1,37 +1,14 @@
 #include <algorithm>
-#include <bitset>
-#include <deque>
-#include <fstream>
-#include <functional>
-#include <iomanip>
 #include <iostream>
-#include <iterator>
-#include <list>
-#include <map>
-#include <queue>
-#include <set>
-#include <stack>
-#include <string>
-#include <typeinfo>
-#include <utility>
 #include <vector>
-#include <complex>
-#include <cmath>
-#include <ctime>
 using namespace std;
 
 typedef long long ll;
-typedef unsigned long long ull;
-typedef unsigned int uint;
-typedef vector<int> vec;
-typedef vector<vec> mat;
-static const double EPS = 1e-9;
-static const double PI = acos(-1.0);
 
 template<class T>
 class Heap{
 private:
-  int heapSize;
+  int heapCapacitySize;
   int heapType;
   int cnt;
   vector<T> array;
@@ -48,6 +25,13 @@ private:
     if(right>=cnt)
       return -1;
     return right;
+  }
+
+  void Heapify(int i){
+    if(heapType==0)
+      maxHeapify(i);
+    else
+      minHeapify(i);
   }
 
   void maxHeapify(int i){
@@ -86,23 +70,15 @@ private:
   }
 
 public:
-  Heap():heapSize(0),heapType(0),cnt(0){}
-  Heap(int capacity,int _heapType):heapSize(capacity),heapType(_heapType),cnt(0){
-    array.resize(capacity);
-  }
-
-  void Heapify(int i){
-    if(heapType==0){
-      maxHeapify(i);
-    } else {
-      minHeapify(i);
-    }
+  Heap():heapCapacitySize(100),heapType(0),cnt(0){}
+  Heap(int _heapType):heapCapacitySize(100),heapType(_heapType),cnt(0){
+    array.resize(100);
   }
 
   void Insert(T data){
-    if(cnt == heapSize){
-      heapSize <<= 1;
-      array.resize(heapSize);
+    if(cnt == heapCapacitySize){
+      heapCapacitySize <<= 1;
+      array.resize(heapCapacitySize);
     }
     int i = cnt;
     cnt++;
@@ -138,7 +114,7 @@ public:
   }
 
   T pop(){
-    if(heapSize>0){
+    if(heapCapacitySize>0){
       return array[0];
     } else {
      return -1;
@@ -160,8 +136,8 @@ private:
 
 public:
   MedianHeap(){
-    MaxHeap = new Heap<T>(1,0);
-    MinHeap = new Heap<T>(1,1);
+    MaxHeap = new Heap<T>(0);
+    MinHeap = new Heap<T>(1);
   }
 
   ~MedianHeap(){
@@ -195,19 +171,17 @@ public:
       swap(data,minHeap);
     }
 
-    if(MaxHeap->size() > MinHeap->size()){
+    if(MaxHeap->size() > MinHeap->size())
       MinHeap->Insert(data);
-    } else {
+    else
       MaxHeap->Insert(data);
-    }
   }
 
   T pop(){
-    if( (MaxHeap->size() + MinHeap->size() ) & 1 ){
+    if( (MaxHeap->size() + MinHeap->size() ) & 1 )
       return MaxHeap->pop();
-    } else {
+    else
       return (MaxHeap->pop() + MinHeap->pop()) / 2;
-    }
   }
 };
 
